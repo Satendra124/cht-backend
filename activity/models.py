@@ -11,6 +11,7 @@ class RawActivity(models.Model):
     soundType = models.CharField(max_length=50)
     timestamp = models.DateTimeField(auto_now_add=True)
     screenTime = models.DurationField()
+    steps = models.IntegerField()
     def __str__(self) -> str:
         return str(self.user)+" " + str(self.timestamp)
 
@@ -25,6 +26,7 @@ class DetailActivity(models.Model):
     index = models.ForeignKey(Index,on_delete=models.CASCADE)
     screenTime = models.DurationField()
     is_mocked = models.BooleanField(default=False)
+    steps = models.IntegerField()
 
     def __str__(self) -> str:
         return str(self.user) +" | "+ str(self.place)

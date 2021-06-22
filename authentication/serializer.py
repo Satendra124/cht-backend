@@ -1,3 +1,4 @@
+from rest_framework.authtoken.models import Token
 from authentication.utils import FirebaseAPI, Student
 from rest_framework import serializers
 from .models import UserProfile
@@ -8,6 +9,19 @@ logger = logging.getLogger('django')
 class TokenSerializer(serializers.Serializer):
     token = serializers.CharField(max_length=500)
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = '__all__'
+
+
+def create_auth_token(user):
+    """
+    Returns the token required for authentication for a user.
+    """
+    # pylint: disable=no-member
+    token, _ = Token.objects.get_or_create(user=user)
+    return token
 
 class LoginSerializer(serializers.Serializer):
     id_token = serializers.CharField(max_length=2400)
@@ -45,10 +59,11 @@ class LoginSerializer(serializers.Serializer):
             current_user = user
             department = Student.get_department(email)
             year_of_joining = Student.get_year(email)
+            token = create_auth_token(current_user)
             # pylint: disable=no-member
             profile = UserProfile.objects.create(
                 uid=uid, user=user, name=name, email=email, department=department,
-                year_of_joining=year_of_joining, photo_url=jwt['picture'])
+                year_of_joining=year_of_joining, photo_url=jwt['picture'],token=token)
 
         attrs['user'] = current_user
         logger.info('[POST Response] User Login : %s', current_user)

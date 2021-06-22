@@ -13,13 +13,14 @@ class ActivitySerializer(serializers.ModelSerializer):
         soundType = data['soundType']
         useruid = data['useruid']
         screenTime = data['screenTime']
+        steps = data['steps']
         user = UserProfile.objects.get(uid=useruid)
-        activity = RawActivity.objects.create(latitude=latitude,longitude=longitude,soundType=soundType,user=user,screenTime=screenTime)
+        activity = RawActivity.objects.create(latitude=latitude,longitude=longitude,soundType=soundType,user=user,screenTime=screenTime,steps=steps)
         #need place and index
         placeName = Mapbox.get_place_from_lat_lng(lat=latitude,lng=longitude)
         place = Mapbox.get_place(placeName=placeName)
         index = Mapbox.get_index(place=place)
-        detailActivity = DetailActivity.objects.create(latitude=latitude,longitude=longitude,soundType=soundType,user=user,place=place,index=index,screenTime=screenTime)
+        detailActivity = DetailActivity.objects.create(latitude=latitude,longitude=longitude,soundType=soundType,user=user,place=place,index=index,screenTime=screenTime,steps=steps)
         return detailActivity
 
     def validate(self, attrs):
@@ -30,7 +31,7 @@ class ActivitySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = RawActivity
-        fields = ('latitude','longitude','soundType','useruid','screenTime')
+        fields = ('latitude','longitude','soundType','useruid','screenTime','steps')
 
 class DetailActivitySerializer(serializers.ModelSerializer):
     class Meta:
