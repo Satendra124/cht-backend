@@ -1,0 +1,35 @@
+from authentication.serializer import LoginSerializer, TokenSerializer
+from django.shortcuts import render
+from rest_framework import generics,permissions
+from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
+from rest_framework import status
+# Create your views here.
+
+def create_auth_token(user):
+    """
+    Returns the token required for authentication for a user.
+    """
+    # pylint: disable=no-member
+    token, _ = Token.objects.get_or_create(user=user)
+    return token
+
+class LoginView(generics.GenericAPIView):
+    authentication_classes = []
+    permission_classes = (permissions.AllowAny, )
+    serializer_class = LoginSerializer
+    def get(self,request):
+        return Response({"OK":"ok"},status=status.HTTP_200_OK)
+    def post(self, request):
+        """
+        Checks the credentials (taking firebase **idToken** as input)\
+        and returns the **REST Token** (Authentication Token),\
+        if the credentials are valid.
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token = create_auth_token(user)
+        response = TokenSerializer({'token': token})
+        return Response(response.data, status.HTTP_200_OK)
+
