@@ -30,6 +30,7 @@ class LoginSerializer(serializers.Serializer):
         """
         Validate the firebase access token.
         """
+        print(access_token)
         try:
             return FirebaseAPI.verify_id_token(access_token)
         except serializers.ValidationError as e:

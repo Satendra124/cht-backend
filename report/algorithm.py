@@ -4,6 +4,7 @@ from authentication.models import UserProfile
 import datetime
 from activity.models import DetailActivity
 import datetime
+from pytz import timezone
 from django.db.models import Q
 class Sleep:
     def __init__(self, start, end):
@@ -43,7 +44,7 @@ def detect_sleep(activities):
     List of [Sleep] objects
     """
 
-    now = datetime.datetime.now()
+    now = datetime.datetime.now().astimezone(timezone('Asia/Kolkata'))
     sleepsus = activities.filter(timestamp__date__gte=now.replace(hour=21,minute=0,second=0,microsecond=0)) 
     sleeps = []
     isSleeping = False
@@ -97,9 +98,10 @@ def get_report_today_live(userid):
     #USER FOR WHICH REPORT WILL BE MADE
     user = UserProfile.objects.get(uid=userid)
     #current time
-    now = datetime.datetime.now()
+    now = datetime.datetime.now().astimezone(timezone('Asia/Kolkata'))
     #this gives activity from 8am today
-    todaysActivity =  DetailActivity.objects.filter(user=user,timestamp__date__gt=now.replace(hour=8,minute=0,second=0,microsecond=0))
+    todaysActivity =  DetailActivity.objects.filter(user=user,timestamp__date__gte=now.replace(hour=8,minute=0,second=0,microsecond=0))
+    print(len(todaysActivity),"- found for today calc")
     #DATA
     indexs = []  #should contain list of all indexs
     indexTimes = {} # dict as INDEX:duration

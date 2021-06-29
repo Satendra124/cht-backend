@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from report.models import Index, Location
 from django.db import models
 from authentication.models import UserProfile
@@ -9,8 +10,8 @@ class RawActivity(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
     soundType = models.CharField(max_length=50)
-    timestamp = models.DateTimeField(auto_now_add=True)
-    screenTime = models.DurationField()
+    timestamp = models.DateTimeField(default=datetime.now)
+    screenTime = models.IntegerField()
     steps = models.IntegerField()
     def __str__(self) -> str:
         return str(self.user)+" " + str(self.timestamp)
@@ -24,7 +25,7 @@ class DetailActivity(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     place = models.ForeignKey(Location,on_delete=models.CASCADE)
     index = models.ForeignKey(Index,on_delete=models.CASCADE)
-    screenTime = models.DurationField()
+    screenTime = models.IntegerField()
     is_mocked = models.BooleanField(default=False)
     steps = models.IntegerField()
 
