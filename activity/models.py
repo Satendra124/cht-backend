@@ -11,7 +11,7 @@ class RawActivity(models.Model):
     longitude = models.FloatField()
     soundType = models.CharField(max_length=50)
     timestamp = models.DateTimeField(default=datetime.now)
-    screenTime = models.IntegerField()
+    #screenTime = models.IntegerField()
     steps = models.IntegerField()
     def __str__(self) -> str:
         return str(self.user)+" " + str(self.timestamp)
