@@ -24,7 +24,7 @@ def is_sleeping_activity(activity,lastLat,lastLng):
     2 . Location Const.
     3 . Index - Sleepable
     """
-    if abs(lastLat-activity.latitude) < 0.00001 and abs(lastLng-activity.longitude) < 0.00001 and activity.screenTime < datetime.timedelta(seconds=10) and activity.index.name == "Hostel":
+    if abs(lastLat-activity.latitude) < 0.00001 and abs(lastLng-activity.longitude) < 0.00001 and activity.screenTime < 2000 and activity.index.name == "Hostel":
         return True
     else:
         return False
@@ -85,20 +85,20 @@ def calculate_score(idealtime,timespent,indexs):
     totalItems = len(indexs)
     for idx in indexs:
         if(idealtime[idx]['greaterThan']<=timespent[idx]):
-            score -= abs(timespent[idx] - idealtime[idx]['greaterThan'])/(idealtime[idx]['greaterThan'] * totalItems)
+            score -= abs(timespent[idx] - idealtime[idx]['greaterThan'])/(max(idealtime[idx]['greaterThan'],timespent[idx]) * totalItems)
         elif idealtime[idx]['lessThan']>=timespent[idx]:
-            score -= abs(idealtime[idx]['lessThan'] - timespent[idx])/(idealtime[idx]['lessThan']*totalItems)
+            score -= abs(idealtime[idx]['lessThan'] - timespent[idx])/(max(idealtime[idx]['lessThan'],timespent[idx])*totalItems)
     return score*10 
 
-def get_report_today_live(userid):
+def get_report_today_live(useruid,dateDay):
     """
-    Parameter: [userid]\n
-    Returns: Report for [userid]
+    Parameter: [useruid]\n
+    Returns: Report for [useruid]
     """
     #USER FOR WHICH REPORT WILL BE MADE
-    user = UserProfile.objects.get(uid=userid)
+    user = UserProfile.objects.get(uid=useruid)
     #current time
-    now = datetime.datetime.now().astimezone(timezone('Asia/Kolkata'))
+    now = dateDay#.astimezone(timezone('Asia/Kolkata'))
     #this gives activity from 8am today
     todaysActivity =  DetailActivity.objects.filter(user=user,timestamp__date__gte=now.replace(hour=8,minute=0,second=0,microsecond=0))
     print(len(todaysActivity),"- found for today calc")
@@ -114,12 +114,19 @@ def get_report_today_live(userid):
     #START - REPORT ALGORITHM-------------------------
     # part 1 ---- DETECT SLEEP -----------------------
     sleeps = detect_sleep(todaysActivity)
+    sleepTime = 0
+    for sl in sleeps:
+        sleepTime += (sl.end - sl.start).seconds
     #part 2 ------ INDEX DATA ----------------------
     #every activity is worth 5 minutes HARDCODED
-
+    steps = 0
+    screenTime = 0
     for activity in todaysActivity:
         if not in_sleep_list(activity=activity,sleepArr=sleeps):
             indexTimes[activity.index.name] += 5.0
+            screenTime += activity.screenTime/1000   #phone givies data in mili
+            steps += activity.steps
+
     activityStr = ""
     for idx in indexs:
         activityStr += idx +","+ str(indexTimes[idx])+ ","+str(indexIdealTime[idx])+";"
@@ -140,6 +147,9 @@ def get_report_today_live(userid):
 
     return {
         "score" : score,
+        "steps":steps,
+        "sleepTime":sleepTime,
+        "screenTime":screenTime,
         "indexHours" : activityStr,
         "activityIndexDiscriptions" : actTexts,
         "suggestions" : suggestions

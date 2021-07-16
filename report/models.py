@@ -33,20 +33,26 @@ class ActivityIndexDiscriptions(models.Model):
 class Suggestions(models.Model):
     greaterThan = models.FloatField()
     lessThan = models.FloatField()
-    text = models.CharField(max_length=200)
+    title = models.CharField(max_length=100)
     link = models.URLField()
     index = models.ForeignKey(Index,on_delete=models.CASCADE)
     location = models.ForeignKey(Location,on_delete=models.CASCADE)
+    description = models.CharField(max_length=200)
+    imageUrl = models.CharField(max_length=200)
     def __str__(self) -> str:
         return self.text
 
 
-class ReportToday(models.Model):
+class Report(models.Model):
     """
         indexHours - store as 2.3,1.2,0.2 ...
     """
     user = models.ForeignKey(UserProfile,on_delete=models.CASCADE)
+    dateDay = models.DateTimeField()
     score = models.FloatField()
+    steps = models.IntegerField()
+    screenTime = models.IntegerField()
+    sleepTime = models.IntegerField()
     indexHours = models.TextField()
     activityIndexDiscriptions = models.ManyToManyField(ActivityIndexDiscriptions,blank=True)
     suggestions = models.ManyToManyField(Suggestions,blank=True)

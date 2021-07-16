@@ -1,5 +1,5 @@
 
-from report.views import ActivityIndexView, IndexView, LocationView, ReportTodayView, SuggestionView
+from report.views import ActivityIndexView, IndexView, LocationView, ReportView, SuggestionView
 from django.urls import path
 
 urlpatterns = [
@@ -7,5 +7,5 @@ urlpatterns = [
     path('suggestions/', SuggestionView.as_view()),
     path('index/', IndexView.as_view()),
     path('location/', LocationView.as_view()),
-    path('report/today/', ReportTodayView.as_view()),   
+    path('report/', ReportView.as_view()),   
 ]

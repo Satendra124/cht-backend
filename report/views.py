@@ -1,8 +1,8 @@
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
-from report.serializer import ActivityIndexSerializer, IndexSerializer, LocationSerializer, ReportTodayDataSerializer, ReportTodaySerializer, SuggestionSerializer
-from report.models import ActivityIndexDiscriptions, Index, Location, ReportToday, Suggestions
+from report.serializer import ActivityIndexSerializer, IndexSerializer, LocationSerializer, ReportDataSerializer, ReportSerializer, SuggestionSerializer
+from report.models import ActivityIndexDiscriptions, Index, Location, Suggestions
 from rest_framework import generics
 from rest_framework.status import HTTP_200_OK
 # Create your views here.
@@ -38,8 +38,8 @@ class LocationView(generics.ListCreateAPIView):
     #permission_classes = [IsAuthenticated]
 
 
-class ReportTodayView(generics.GenericAPIView):
-    serializer_class = ReportTodaySerializer
+class ReportView(generics.GenericAPIView):
+    serializer_class = ReportSerializer
     authentication_classes = [TokenAuthentication]
     #permission_classes = [IsAuthenticated]
     def get(self,request):
@@ -49,7 +49,7 @@ class ReportTodayView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         report  = serializer.save()
-        response = ReportTodayDataSerializer(report)
+        response = ReportDataSerializer(report)
         return Response(response.data, status=status.HTTP_200_OK)
 
 

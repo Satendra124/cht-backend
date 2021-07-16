@@ -22,6 +22,14 @@ def create_auth_token(user):
     # pylint: disable=no-member
     token, _ = Token.objects.get_or_create(user=user)
     return token
+class UserSerializer(serializers.Serializer):
+    uid = serializers.CharField(max_length=200)
+    def validate(self, attrs):
+        if(len(UserProfile.objects.filter(uid=attrs['uid']))==0):
+            raise serializers.ValidationError("user not found")
+        return attrs
+        
+
 
 class LoginSerializer(serializers.Serializer):
     id_token = serializers.CharField(max_length=2400)

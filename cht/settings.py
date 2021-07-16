@@ -14,7 +14,7 @@ import os
 from pathlib import Path
 import firebase_admin
 from firebase_admin import credentials
-
+import django_heroku
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -135,3 +135,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 cred = credentials.Certificate(os.path.join(BASE_DIR, 'service_account.json'))
 default_app = firebase_admin.initialize_app(cred)
+# Activate Django-Heroku.
+django_heroku.settings(locals())
