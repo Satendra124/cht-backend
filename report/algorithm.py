@@ -1,8 +1,8 @@
+from activity.models import Activity
 from django.db.models.lookups import GreaterThan
 from report.models import ActivityIndexDiscriptions, Index, Suggestions
 from authentication.models import UserProfile
 import datetime
-from activity.models import DetailActivity
 import datetime
 from pytz import timezone
 from django.db.models import Q
@@ -100,7 +100,7 @@ def get_report_today_live(useruid,dateDay):
     #current time
     now = dateDay#.astimezone(timezone('Asia/Kolkata'))
     #this gives activity from 8am today
-    todaysActivity =  DetailActivity.objects.filter(user=user,timestamp__date__gte=now.replace(hour=8,minute=0,second=0,microsecond=0))
+    todaysActivity =  Activity.objects.filter(user=user,timestamp__date__gte=now.replace(hour=8,minute=0,second=0,microsecond=0))
     print(len(todaysActivity),"- found for today calc")
     #DATA
     indexs = []  #should contain list of all indexs

@@ -1,7 +1,7 @@
 from rest_framework.authtoken.models import Token
 from authentication.utils import FirebaseAPI, Student
 from rest_framework import serializers
-from .models import UserProfile
+from .models import ExtendedUserProfile, UserProfile
 from django.contrib.auth.models import User
 import logging
 logger = logging.getLogger('django')
@@ -23,9 +23,9 @@ def create_auth_token(user):
     token, _ = Token.objects.get_or_create(user=user)
     return token
 class UserSerializer(serializers.Serializer):
-    uid = serializers.CharField(max_length=200)
+    useruid = serializers.CharField(max_length=200)
     def validate(self, attrs):
-        if(len(UserProfile.objects.filter(uid=attrs['uid']))==0):
+        if(len(UserProfile.objects.filter(useruid=attrs['useruid']))==0):
             raise serializers.ValidationError("user not found")
         return attrs
         
@@ -49,9 +49,9 @@ class LoginSerializer(serializers.Serializer):
         id_token = attrs.get('id_token', None)
         current_user = None
         jwt = self.access_token_validate(id_token)
-        uid = jwt['uid']
+        useruid = jwt['uid']
         # pylint: disable=no-member
-        profile = UserProfile.objects.filter(uid=uid)
+        profile = UserProfile.objects.filter(useruid=useruid)
 
         if profile:
             current_user = profile[0].user
@@ -71,9 +71,14 @@ class LoginSerializer(serializers.Serializer):
             token = create_auth_token(current_user)
             # pylint: disable=no-member
             profile = UserProfile.objects.create(
-                uid=uid, user=user, name=name, email=email, department=department,
+                useruid=useruid, user=user, name=name, email=email, department=department,
                 year_of_joining=year_of_joining, photo_url=jwt['picture'],token=token)
 
         attrs['user'] = current_user
         logger.info('[POST Response] User Login : %s', current_user)
         return attrs
+class ExtendedUserSerializer(serializers.ModelSerializer):
+    calculated_scores = serializers.CharField(max_length=100)
+    class Meta:
+        model = ExtendedUserProfile
+        fields = ('useruid','gender','height','weight','age','quiz_answer_string','calculated_scores',)

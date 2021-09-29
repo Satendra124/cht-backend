@@ -1,6 +1,5 @@
 import re
 from report.algorithm import get_report_today_live
-from activity.models import DetailActivity
 from authentication.models import UserProfile
 from django.db.models import fields
 from report.models import ActivityIndexDiscriptions, Index, Location, Report, Suggestions
@@ -44,7 +43,7 @@ class ReportSerializer(serializers.Serializer):
         data = self.validated_data
         report = get_report_today_live(useruid=data['useruid'],dateDay=data['dateDay'])
         reportobj, _ = Report.objects.update_or_create(user=UserProfile.objects.get(
-            uid=data['useruid']), score=report['score'], indexHours=report['indexHours'], steps=report['steps'], screenTime=report['screenTime'], sleepTime=report['sleepTime'], dateDay=data['dateDay'])
+            useruid=data['useruid']), score=report['score'], indexHours=report['indexHours'], steps=report['steps'], screenTime=report['screenTime'], sleepTime=report['sleepTime'], dateDay=data['dateDay'])
         for at in report['activityIndexDiscriptions']:
             reportobj.activityIndexDiscriptions.add(at)
         for sg in report['suggestions']:
