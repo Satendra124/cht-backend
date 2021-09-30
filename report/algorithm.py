@@ -45,7 +45,7 @@ def detect_sleep(activities):
     """
 
     now = datetime.datetime.now().astimezone(timezone('Asia/Kolkata'))
-    sleepsus = activities.filter(timestamp__date__gte=now.replace(hour=21,minute=0,second=0,microsecond=0)) 
+    sleepsus = activities.filter(date_posted__date__gte=now.replace(hour=21,minute=0,second=0,microsecond=0)) 
     sleeps = []
     isSleeping = False
     cursleep = Sleep(now,now)

@@ -1,6 +1,6 @@
 from datetime import datetime
 from activity.util import Mapbox
-from activity.models import Activity, SleepEvent, Survey, UsageData
+from activity.models import Activity, Mood, SleepEvent, Survey, UsageData
 from rest_framework import serializers
 from authentication.models import UserProfile
 import json
@@ -122,3 +122,9 @@ def validateUser(useruid):
     user = UserProfile.objects.filter(useruid=useruid)
     if len(user)==0: return False
     return True
+
+
+class MoodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Mood
+        fields = '__all__'

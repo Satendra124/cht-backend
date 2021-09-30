@@ -3,7 +3,14 @@ from report.models import Index, Location
 from django.db import models
 from authentication.models import UserProfile
 # Create your models here.
-
+class Mood(models.Model):
+    """
+    Mood are as follows : Happy Calm Sad Scared Angry
+    eg :- 45124
+    """
+    emojiString = models.CharField(max_length=10)
+    useruid = models.CharField(max_length=100)
+    date_posted = models.DateField()
 
 class Activity(models.Model):
     user = models.ForeignKey(UserProfile,on_delete=models.CASCADE)
@@ -21,7 +28,7 @@ class Activity(models.Model):
 class Survey(models.Model):
     answer_string = models.CharField(max_length=100)
     useruid = models.CharField(max_length=100)
-    timestamp = models.DateTimeField(default=datetime.now())
+    date_posted = models.DateTimeField(default=datetime.now())
 
 # class DetailActivity(models.Model):
 #     user = models.ForeignKey(UserProfile,on_delete=models.CASCADE)
