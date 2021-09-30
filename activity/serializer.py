@@ -1,8 +1,9 @@
+from datetime import datetime
 from activity.util import Mapbox
 from activity.models import Activity, SleepEvent, Survey, UsageData
 from rest_framework import serializers
 from authentication.models import UserProfile
-
+import json
 KEY_ID = "id"
 KEY_TIME_START = "time_start"
 KEY_TIME_END = "time_end"
@@ -38,7 +39,7 @@ class ActivitySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Activity
-        fields = ('latitude','longitude','amplitude','useruid','steps','time_start' ,'time_end','moods')
+        fields = ('latitude','longitude','amplitude','useruid','steps','time_start' ,'time_end')
 
 class UsageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -92,8 +93,30 @@ class FetchActivitySerializer(serializers.Serializer):
         return attrs
     def save(self, **kwargs):
         return super().save(**kwargs)
-
-
+class DataDumpSerializer(serializers.Serializer):
+    data = serializers.CharField()
+    usagedata = serializers.CharField()
+    useruid = serializers.CharField()
+    def validate(self, attrs):
+        data =  attrs
+        useruid = data['useruid']
+        if not validateUser(useruid=useruid): raise serializers.ValidationError({"error":"User Not Found"})
+        return attrs
+    def save(self, **kwargs):
+        activites_string = self.validated_data['data']
+        useruid = self.validated_data['useruid']
+        activites_json = json.loads(activites_string)
+        for activity_data in activites_json:
+            activity_data['useruid'] = useruid
+            serializer = ActivitySerializer(data=activity_data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+        user_data_string = self.validated_data['usagedata']
+        usage_serializer  = {"useruid":useruid,"usageString":user_data_string,"date_posted":datetime.now}
+        serializer = UsageSerializer(data=usage_serializer)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return super().save(**kwargs)
 
 def validateUser(useruid):
     user = UserProfile.objects.filter(useruid=useruid)

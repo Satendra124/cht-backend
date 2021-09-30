@@ -14,7 +14,7 @@ class Activity(models.Model):
     time_start = models.DateTimeField()
     time_end = models.DateTimeField()
     steps = models.IntegerField()
-    moods = models.CharField(max_length=50)
+    #moods = models.CharField(max_length=50)
     def __str__(self) -> str:
         return str(self.user)+" " + str(self.time_start)
 

@@ -1,4 +1,4 @@
-from activity.views import ActivityView, FetchActivity, SleepView, SurveyView, UsageView
+from activity.views import ActivityView, DataDump, FetchActivity, SleepView, SurveyView, UsageView
 from django.urls import path
 
 urlpatterns = [
@@ -6,5 +6,7 @@ urlpatterns = [
     path('survey/', SurveyView.as_view()),
     path('sleep/',SleepView.as_view()),
     path('activity/query/',FetchActivity.as_view()),
-    path('usage/',UsageView.as_view())
+    path('usage/',UsageView.as_view()),
+    path('dump/',DataDump.as_view()),
+    
 ]
